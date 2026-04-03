@@ -17,5 +17,5 @@ public interface ApplicationRepo extends MongoRepository<Application, String> {
 
     List<Application> findAllByOrderByAppliedDateDesc();
 
-    // appliedDate
+    
 }

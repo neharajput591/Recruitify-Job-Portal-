@@ -19,6 +19,9 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/companyKyc/**")
                 .addResourceLocations("file:companyKyc/");
+
+        registry.addResourceHandler("/companyLogo/**")
+                .addResourceLocations("file:companyLogo/");
     }
 
 }

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification - Recruitify</title>
+    <!-- icon cdn -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- css -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/otpStyle.css}">
+</head>
+
+<body>
+
+    <div class="main" id="home">
+        <div class="overlay">
+
+            <!-- header -->
+            <header id="mainHeader">
+                <div class="container">
+                    <div class="logo">
+                        <i class="fa-solid fa-users-viewfinder"></i>Recruitify
+                    </div>
+                    <nav id="nav">
+                        <a th:href="@{/}">Home</a>
+                        <a th:href="@{/#findJobs}">Find Jobs</a>
+                        <a th:href="@{/#jobCategories}">Job Categories</a>
+                        <a th:href="@{/#aboutUs}">About Us</a>
+                        <a th:href="@{/#footer}">Contact</a>
+                    </nav>
+                    <div class="auth-buttons">
+                        <a th:href="@{/login}"><button class="commonBtn"><i class="fa-solid fa-user"></i> Login</button></a>
+                        <a th:href="@{/register}"><button class="commonBtn"><i class="fa-solid fa-right-to-bracket"></i> Register</button></a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- OTP Section -->
+            <div class="otp-section">
+                <div class="otp-card">
+                    <h2 class="otp-title">Verify Your Email</h2>
+                    <p class="otp-subtitle">Please enter the 6-digit OTP sent to your email</p>
+
+                    <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+                    <div th:if="${message}" class="alert-success" th:text="${message}"></div>
+
+                    <form th:action="@{/verify-otp}" method="post">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" name="email" placeholder="Enter your registered email" required>
+
+                        <label class="form-label">OTP Code</label>
+                        <input type="text" class="form-input" name="otp" placeholder="Enter 6-digit OTP" required maxlength="6">
+
+                        <button type="submit" class="otp-button">Verify OTP</button>
+                    </form>
+
+                    <div class="resend-section">
+                        <p class="resend-text">Didn't receive the code?</p>
+                        <form th:action="@{/resend-otp}" method="post" style="display: inline;">
+                            <input type="hidden" name="email" th:value="${email}"> <!-- Hidden input for resend if email is passed -->
+                            <button type="submit" class="resend-button">Resend OTP</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- custom js -->
+    <script th:src="@{/js/custom.js}"></script>
+</body>
+
+</html>

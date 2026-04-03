@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Registration - Recruitify</title>
+    <!-- icon cdn -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- css -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        .register-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 80px);
+            padding: 40px 20px;
+        }
+
+        .register-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            z-index: 10;
+        }
+
+        .register-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .register-subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            outline: none;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .form-input[readonly] {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .role-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .role-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .role-option input[type="radio"] {
+            display: none;
+        }
+
+        .role-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f9f9f9;
+            text-align: center;
+        }
+
+        .role-label i {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #777;
+        }
+
+        .role-label span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .role-option input[type="radio"]:checked + .role-label {
+            border-color: var(--primary-color);
+            background-color: #f0fdf4;
+        }
+
+        .role-option input[type="radio"]:checked + .role-label i,
+        .role-option input[type="radio"]:checked + .role-label span {
+            color: var(--primary-color);
+        }
+
+        .register-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-color);
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .register-button:hover {
+            background: #3e8e41;
+        }
+
+        .alert-error {
+            color: #e53e3e;
+            background-color: #fff5f5;
+            border: 1px solid #fed7d7;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="main" id="home">
+        <div class="overlay">
+
+            <!-- header -->
+            <header id="mainHeader">
+                <div class="container">
+                    <div class="logo">
+                        <i class="fa-solid fa-users-viewfinder"></i>Recruitify
+                    </div>
+                    <nav id="nav">
+                        <a th:href="@{/}">Home</a>
+                        <a th:href="@{/#findJobs}">Find Jobs</a>
+                        <a th:href="@{/#jobCategories}">Job Categories</a>
+                        <a th:href="@{/#aboutUs}">About Us</a>
+                        <a th:href="@{/#footer}">Contact</a>
+                    </nav>
+                    <div class="auth-buttons">
+                        <a th:href="@{/login}"><button class="commonBtn"><i class="fa-solid fa-user"></i> Login</button></a>
+                    </div>
+                </div>
+            </header>
+
+            <!-- completion section -->
+            <div class="register-section">
+                <div class="register-card">
+                    <h2 class="register-title">Complete Your Profile</h2>
+                    <p class="register-subtitle">Just a few more steps to join Recruitify</p>
+
+                    <form id="completionForm">
+                        <div id="messageBox"></div>
+
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="emailInput" class="form-input" name="email" th:value="${email}" readonly>
+
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="nameInput" class="form-input" name="name" required placeholder="Enter your full name">
+
+                        <label class="form-label">Create Password</label>
+                        <input type="password" id="passwordInput" class="form-input" name="password" required placeholder="Minimum 6 characters">
+
+                        <label class="form-label">I am a:</label>
+                        <div class="role-group">
+                            <div class="role-option">
+                                <input type="radio" name="role" id="roleCandidate" value="Candidate" checked>
+                                <label for="roleCandidate" class="role-label">
+                                    <i class="fa-solid fa-user-graduate"></i>
+                                    <span>Candidate</span>
+                                </label>
+                            </div>
+                            <div class="role-option">
+                                <input type="radio" name="role" id="roleRecruiter" value="Recruiter">
+                                <label for="roleRecruiter" class="role-label">
+                                    <i class="fa-solid fa-briefcase"></i>
+                                    <span>Recruiter</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="register-button">Complete Registration</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('completionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('emailInput').value;
+            const name = document.getElementById('nameInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const role = document.querySelector('input[name="role"]:checked').value;
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = 'Saving...';
+
+            const formData = new URLSearchParams();
+            formData.append('email', email);
+            formData.append('name', name);
+            formData.append('password', password);
+            formData.append('role', role);
+
+            fetch('/api/auth/complete-registration', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageBox = document.getElementById('messageBox');
+                if (data.success) {
+                    messageBox.innerHTML = `<div class="alert-success" style="color: green; background: #e6fffa; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">${data.message}</div>`;
+                    setTimeout(() => {
+                        window.location.href = '/login?registered=true';
+                    }, 2000);
+                } else {
+                    messageBox.innerHTML = `<div class="alert-error">${data.message}</div>`;
+                    btn.disabled = false;
+                    btn.innerText = 'Complete Registration';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                btn.disabled = false;
+                btn.innerText = 'Complete Registration';
+            });
+        });
+    </script>
+</body>
+
+</html>

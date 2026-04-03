@@ -21,17 +21,32 @@
     <header id="mainHeader">
         <div class="container">
             <div class="logo">
-                <a th:href="@{/Recruiter/home}" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+                <a th:href="@{/Recruiter/home}"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center;">
                     <i class="fa-solid fa-users-viewfinder"></i> Recruitify
                 </a>
             </div>
             <nav id="nav">
                 <a th:href="@{/recruiter_home}">Home</a>
-                <a th:href="@{/Recruiter/postRequest}">Post a Job</a>
+                <!-- <a th:href="@{/Recruiter/postRequest}">Post a Job</a> -->
+
+                <!-- If recruiter is approved -->
+                <a th:if="${verifyStatus == 'Verified'}" th:href="@{/Recruiter/postRequest}" >
+                   Post Job
+                </a>
+                <!-- If recruiter is not verified -->
+                <a th:if="${verifyStatus == 'Pending'}" href="#" onclick="showVerificationPopup()" >
+                     Post Job
+                </a>
+                <a th:if="${verifyStatus == 'Rejected'}" href="#" onclick="showRejectionPopup()" >
+                     Post Job
+                </a>
+
+
                 <a href="#company-kyc">Upload Company Kyc</a>
                 <a href="#footer">Resources</a>
 
-                 <a th:href="@{/logout}" title="Logout" class="logout-icon">
+                <a th:href="@{/logout}" title="Logout" class="logout-icon">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </a>
             </nav>
@@ -59,13 +74,20 @@
 
         <div class="form-card" data-aos="fade-up">
 
-            <!-- Profile Picture Section -->
-            <div class="profile-pic-container">
-                <img th:src="@{'/profilePic/' + ${recruiter.profilepic}}" class="profile-img" alt="Profile Picture">
-                <div style="font-weight: 600; color: var(--primary-color);">Current Profile Picture</div>
+            <!-- Profile Picture & Logo Section -->
+            <div class="profile-pic-container" style="display: flex; justify-content: space-around; gap: 20px;">
+                <div style="text-align: center;">
+                    <img th:src="@{'/profilePic/' + ${recruiter.profilepic}}" class="profile-img" alt="Profile Picture">
+                    <div style="font-weight: 600; color: var(--primary-color);">Current Profile Picture</div>
+                </div>
+                <div th:if="${recruiter.companyLogo != null}" style="text-align: center;">
+                    <img th:src="@{'/companyLogo/' + ${recruiter.companyLogo}}" class="profile-img" alt="Company Logo" style="object-fit: contain; background: #f9f9f9;">
+                    <div style="font-weight: 600; color: var(--primary-color);">Current Company Logo</div>
+                </div>
             </div>
 
-            <form th:action="@{/Recruiter/formData}" method="post" th:object="${recruiter}" enctype="multipart/form-data">
+            <form th:action="@{/Recruiter/formData}" method="post" th:object="${recruiter}"
+                enctype="multipart/form-data">
                 <div class="form-grid">
                     <div class="input-group">
                         <label><i class="fa-solid fa-envelope"></i> Email Address</label>
@@ -80,6 +102,12 @@
                     <div class="input-group">
                         <label><i class="fa-solid fa-building"></i> Company Name</label>
                         <input type="text" th:field="*{companyName}" placeholder="Tech Solutions Inc." required>
+                    </div>
+
+                    <div class="input-group">
+                        <label ><i class="fa-brands"></i> Company Logo </label>
+                        <!-- <input type="text" th:field="*{companyLogo}" placeholder=""> -->
+                        <input type="file" name="logo" accept="image/*">
                     </div>
 
                     <div class="input-group">
@@ -139,7 +167,8 @@
 
                     <div class="input-group full">
                         <label><i class="fa-solid fa-info-circle"></i> About You / Professional Summary</label>
-                        <textarea rows="4" th:field="*{about}" placeholder="Tell us about your professional background and hiring goals..."></textarea>
+                        <textarea rows="4" th:field="*{about}"
+                            placeholder="Tell us about your professional background and hiring goals..."></textarea>
                     </div>
                 </div>
 
@@ -151,8 +180,10 @@
 
         <!-- KYC SECTION -->
         <div class="kyc-card" data-aos="fade-right" id="company-kyc">
-            <h2><i class="fa-solid fa-shield-halved" style="color: var(--primary-color);"></i> Company Verification (KYC)</h2>
-            <p style="color: var(--gray-text); margin-bottom: 20px;">Upload your company's registration or tax documents to build trust with candidates.</p>
+            <h2><i class="fa-solid fa-shield-halved" style="color: var(--primary-color);"></i> Company Verification
+                (KYC)</h2>
+            <p style="color: var(--gray-text); margin-bottom: 20px;">Upload your company's registration or tax documents
+                to build trust with candidates.</p>
 
             <form th:action="@{/Recruiter/uploadCompanyKyc}" method="post" enctype="multipart/form-data">
                 <div class="input-group">
@@ -162,7 +193,8 @@
                     <i class="fa-solid fa-circle-info"></i> Important: PDF format preferred. Max file size: 1 MB.
                 </div>
                 <br>
-                <button type="submit" class="commonBtn" style="background: #333; margin-top: 15px; width: 100%; justify-content: center; padding: 18px;">
+                <button type="submit" class="commonBtn"
+                    style="background: #333; margin-top: 15px; width: 100%; justify-content: center; padding: 18px;">
                     <i class="fa-solid fa-file-arrow-up"></i> Upload Company KYC
                 </button>
             </form>
@@ -193,7 +225,7 @@
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Internship Job</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Freelancer Job</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Part Time Job</a>
-                <a href="#"><i class="fa-solid fa-angles-right"></i> Full Time Job</a>   
+                <a href="#"><i class="fa-solid fa-angles-right"></i> Full Time Job</a>
             </div>
 
             <div class="column">
@@ -202,7 +234,7 @@
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Career Counseling</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> My jobs</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> FAQ</a>
-                <a href="#"><i class="fa-solid fa-angles-right"></i> Report a Problem</a>   
+                <a href="#"><i class="fa-solid fa-angles-right"></i> Report a Problem</a>
             </div>
 
             <div class="column">
@@ -211,7 +243,7 @@
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Support</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> How it Works</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Underwriting</a>
-                <a href="#"><i class="fa-solid fa-angles-right"></i> Employers</a>   
+                <a href="#"><i class="fa-solid fa-angles-right"></i> Employers</a>
             </div>
 
             <div class="column">
@@ -220,7 +252,7 @@
                 <a href="#"><i class="fa-solid fa-angles-right"></i> About Us</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Contact Us</a>
                 <a href="#"><i class="fa-solid fa-angles-right"></i> Privacy Policy</a>
-                <a href="#"><i class="fa-solid fa-angles-right"></i> Term & Conditions</a>   
+                <a href="#"><i class="fa-solid fa-angles-right"></i> Term & Conditions</a>
             </div>
         </div>
 
@@ -237,6 +269,16 @@
             duration: 1000,
             once: true
         });
+    </script>
+
+    <script>
+        function showVerificationPopup() {
+            alert("Your profile is not yet verified. You cannot post a job right now.");
+        }
+
+        function showRejectionPopup() {
+            alert("Your documents or profile is incomplete. Please update them and then Submit them again.")
+        }
     </script>
 </body>
 

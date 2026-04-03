@@ -23,7 +23,7 @@ import com.jobportal.model.Jobs;
 import com.jobportal.model.User12;
 import com.jobportal.repository.ApplicationRepo;
 import com.jobportal.repository.UserRepo12;
-import com.jobportal.security.user12Repo;
+// import com.jobportal.security.user12Repo;
 import com.jobportal.service.ApplicationService;
 import com.jobportal.service.JobService;
 import com.jobportal.service.RecruiterService;
@@ -133,13 +133,15 @@ public class RecruiterController {
         recruiter.setIdUser(recruiter.getIdUser());
 
         model.addAttribute("recruiter", recruiter);
+        model.addAttribute("verifyStatus", recruiter.getVerify());
 
         return "UpdateFormRecruiter";
     }
 
     @PostMapping("/Recruiter/formData")
     public String recruiterProfileData(@ModelAttribute("recruiter") User12 formUser,
-            @RequestParam("pic") MultipartFile file, Model model, Principal principal) {
+            @RequestParam("pic") MultipartFile file, Model model, Principal principal,
+            @RequestParam("logo") MultipartFile file1) {
 
         try {
 
@@ -148,49 +150,54 @@ public class RecruiterController {
             String uploadDir = "profilePic/";
             Path uploadPath = Paths.get(uploadDir);
 
+            String uploadLogoDir = "companyLogo/";
+            Path uploadLogoPath = Paths.get(uploadLogoDir);
+
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            if (!file.isEmpty()) {
+            if(!Files.exists(uploadLogoPath)){
+                Files.createDirectories(uploadLogoPath);
+            }
 
+
+            User12 existingUser = user12service.getByEmail(email);
+
+            if (!file.isEmpty()) {
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path path = uploadPath.resolve(fileName);
                 Files.write(path, file.getBytes());
-
-                User12 recruiter12 = user12service.getByEmail(email);
-                recruiter12.setProfilepic(fileName);
-
-                user12Repo.save(recruiter12);
+                existingUser.setProfilepic(fileName);
             }
 
-            // Optional<User12> recruiter12 = user12Repo.findByEmail(email);
+            if (!file1.isEmpty()) {
+                String fileNameLogo = System.currentTimeMillis() + "_" + file1.getOriginalFilename();
+                Path pathLogo = uploadLogoPath.resolve(fileNameLogo);
+                Files.write(pathLogo, file1.getBytes());
+                existingUser.setCompanyLogo(fileNameLogo);
+            }
+
+            // Update profile fields
+            existingUser.setName(formUser.getName());
+            existingUser.setAge(formUser.getAge());
+            existingUser.setSkills(formUser.getSkills());
+            existingUser.setCity(formUser.getCity());
+            existingUser.setState(formUser.getState());
+            existingUser.setCountry(formUser.getCountry());
+            existingUser.setContact(formUser.getContact());
+            existingUser.setEducation(formUser.getEducation());
+            existingUser.setExperience(formUser.getExperience());
+            existingUser.setAbout(formUser.getAbout());
+            existingUser.setCompanyName(formUser.getCompanyName());
+            existingUser.setCompanyAddress(formUser.getCompanyAddress());
+            existingUser.setPosition(formUser.getPosition());
+
+            user12Repo.save(existingUser);
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
-
-        String email = principal.getName();
-
-        User12 existingUser = user12service.getByEmail(email);
-
-        // // update only profile fields
-        existingUser.setName(formUser.getName());
-        existingUser.setAge(formUser.getAge());
-        existingUser.setSkills(formUser.getSkills());
-        existingUser.setCity(formUser.getCity());
-        existingUser.setState(formUser.getState());
-        existingUser.setCountry(formUser.getCountry());
-        existingUser.setContact(formUser.getContact());
-        existingUser.setEducation(formUser.getEducation());
-        existingUser.setExperience(formUser.getExperience());
-        existingUser.setAbout(formUser.getAbout());
-        existingUser.setCompanyName(formUser.getCompanyName());
-        existingUser.setCompanyAddress(formUser.getCompanyAddress());
-        existingUser.setPosition(formUser.getPosition());
-
-        user12Repo.save(existingUser);
 
         return "redirect:/recruiter_home";
     }
@@ -263,6 +270,7 @@ public class RecruiterController {
             Jobs newPost = new Jobs();
 
             newPost.setCompanyName(recuiterdetails.getCompanyName());
+            newPost.setCompanyLogo(recuiterdetails.getCompanyLogo());
             newPost.setRecruiterId(recuiterdetails.getIdUser());
             newPost.setContact(recuiterdetails.getContact());
 
@@ -277,7 +285,7 @@ public class RecruiterController {
             // return "newpage";
             model.addAttribute("errorMessage",
                     "Your profile is not yet verified. You cannot post a job right now.");
-            return "RecruiterDashboard";
+            return "recruiter_home";
         }
     }
 

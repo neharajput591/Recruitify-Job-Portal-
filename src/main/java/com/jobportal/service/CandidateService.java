@@ -19,7 +19,7 @@ public class CandidateService {
         candidateRepo.save(candidateProfile);
     }
 
-      // 🔹 Get candidate by ID
+      // Get candidate by ID
     public Candidate getByCandidateId(String candidateId) {
 
         Optional<Candidate> cand = candidateRepo.findByCandidateId(candidateId);
@@ -31,7 +31,7 @@ public class CandidateService {
         }
     }
 
-    // 🔹 Get all candidates (if needed)
+    // Get all candidates 
     public List<Candidate> getAllCandidates() {
         return candidateRepo.findAll();
     }

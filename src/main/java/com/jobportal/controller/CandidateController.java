@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,11 +63,18 @@ public class CandidateController {
     // }
 
     @GetMapping("/candidate_home")
-    public String candidateHome(Model model, Principal principal) {
+    public String candidateHome(Model model, Principal principal, @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        List<Jobs> jobs = jobRepo.findAllByOrderByPostedDateDesc();
+        // List<Jobs> jobs = jobRepo.findAllByOrderByPostedDateDesc();
 
-        model.addAttribute("jobs", jobs);
+        // model.addAttribute("jobs", jobs);
+
+         Page<Jobs> jobPage = jobService.getJobs(page, size);
+
+        model.addAttribute("jobs", jobPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", jobPage.getTotalPages());
 
         String email = principal.getName();
 

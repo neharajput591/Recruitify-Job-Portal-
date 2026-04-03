@@ -29,4 +29,6 @@ public interface UserRepo12 extends MongoRepository<User12,String> {
 
     List<User12> findByRoleAndVerifyOrderByCreatedDateDesc(String role, String verify);
 
+    
+
 }

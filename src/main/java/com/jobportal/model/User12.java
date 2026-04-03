@@ -1,5 +1,6 @@
 package com.jobportal.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
@@ -23,6 +24,10 @@ public class User12 {
     String email;
 
     String password;
+
+    private String otp;
+    private LocalDateTime otpExpiry;
+    private boolean enabled;
 
     String role;
     Date createdDate = new Date();
@@ -55,6 +60,8 @@ public class User12 {
 
     String position;
     String companyAddress;
+
+    String companyLogo = null;
 
     String verify = "Pending";
 
@@ -219,6 +226,14 @@ public class User12 {
         this.profilepic = profilepic;
     }
 
+    public String getCompanyLogo(){
+        return companyLogo;
+    }
+
+    public void setCompanyLogo(String companyLogo){
+        this.companyLogo = companyLogo;
+    }
+
     public void setResume(String resume) {
         this.resume = resume;
     }
@@ -241,6 +256,30 @@ public class User12 {
 
     public void setCompanyKyc(String companyKyc) {
         this.companyKyc = companyKyc;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public LocalDateTime getOtpExpiry() {
+        return otpExpiry;
+    }
+
+    public void setOtpExpiry(LocalDateTime otpExpiry) {
+        this.otpExpiry = otpExpiry;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
     }
 
 }

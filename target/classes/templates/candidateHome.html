@@ -72,6 +72,10 @@
                 <div class="job-card" th:each="job, iterStat : ${jobsearched}"
                     th:attr="data-aos=${iterStat.index % 2 == 0 ? 'fade-right' : 'fade-left'}, data-aos-delay=${iterStat.index * 100}">
                     <div class="job-card-header">
+                        <img th:if="${job.companyLogo != null and !job.companyLogo.startsWith('/')}" th:src="@{'/companyLogo/' + ${job.companyLogo}}" class="profile-img" alt="company Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: contain; background: #eee;">
+                        <img th:if="${job.companyLogo != null and job.companyLogo.startsWith('/')}" th:src="@{${job.companyLogo}}" class="profile-img" alt="company Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: contain; background: #eee;">
+                        <img th:if="${job.companyLogo == null}" th:src="@{/images/microsoftLogo.png}" class="profile-img" alt="Default Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: contain; background: #eee;">
+
                         <h3 th:text="${job.title}" class="job-title"></h3>
                         <span class="salary-tag" th:text="${job.salary}"></span>
                     </div>
@@ -137,17 +141,21 @@
             <div class="job-card" th:each="job, iterStat : ${jobs}"
                 th:attr="data-aos=${iterStat.index % 2 == 0 ? 'fade-right' : 'fade-left'}, data-aos-delay=${iterStat.index * 100}">
                 <div class="job-card-header">
+                    <img th:if="${job.companyLogo != null and !job.companyLogo.startsWith('/')}" th:src="@{'/companyLogo/' + ${job.companyLogo}}" class="profile-img" alt="company Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: contain; background: #eee;">
+                    <img th:if="${job.companyLogo != null and job.companyLogo.startsWith('/')}" th:src="@{${job.companyLogo}}" class="profile-img" alt="company Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: contain; background: #eee;">
+                    <img th:if="${job.companyLogo == null}" th:src="@{/images/microsoftLogo.png}" class="profile-img" alt="Default Logo" style="height: 30px; width: 30px; border-radius: 50%; object-fit: contain; background: #eee;">
+
                     <h3 th:text="${job.title}" class="job-title"></h3>
                     <span class="salary-tag" th:text="${job.salary}"></span>
                 </div>
 
                 <div class="job-meta">
                     <span><i class="fa-solid fa-building"></i> <span th:text="${job.companyName}"></span></span>
-                    <span><i class="fa-solid fa-location-dot"></i> <span th:text="${job.location}"></span></span>
+                    <span><i class="fa-solid fa-location-dot"></i> <span th:text="${job.location}"></span></span><br>
                 </div>
 
                 <div class="skill-tags">
-                    <span class="skill-tag" th:text="${job.skillsRequired}"></span>
+                    <span class="skill-tag" th:text="${job.skillsRequired}"></span><br>
                 </div>
 
                 <div class="job-card-actions">
@@ -169,6 +177,22 @@
                 </div>
             </div>
         </div>
+
+
+        
+
+        <!-- Pagination Buttons -->
+        <div class="pagination" style="margin-left:50% ;">
+            <a th:if="${currentPage > 0}" th:href="@{/candidate_home(page=${currentPage - 1})}"  style="color: black; margin-right: 15px;" >
+                <i
+                    class="fa-solid fa-arrow-left"></i></a>
+
+            <span th:text="${currentPage + 1}"></span>
+
+            <a th:if="${currentPage < totalPages - 1}" th:href="@{/candidate_home(page=${currentPage + 1})}" style="color: black; margin-left: 15px;"  >
+                <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+
     </div>
 
     <!-- Features Section -->

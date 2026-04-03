@@ -3,27 +3,24 @@ package com.jobportal.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
-// import com.jobportal.model.Candidate;
-// import com.jobportal.model.Recruiter;
-// import com.jobportal.model.User;
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.jobportal.model.Jobs;
 import com.jobportal.model.User12;
 import com.jobportal.repository.JobRepo;
 import com.jobportal.repository.UserRepo12;
 import com.jobportal.repository.UnusedRepo.CandidateRepo;
-import com.jobportal.repository.UnusedRepo.RecruiterRepo;
-import com.jobportal.repository.UnusedRepo.UserRepo;
+import com.jobportal.service.JobService;
+import com.jobportal.service.User12Service;
 
 
 @Controller
@@ -38,32 +35,51 @@ public class AuthController {
     @Autowired
     CandidateRepo candidateRepo;
 
+    @Autowired
+    User12Service userService;
+
     // @Autowired
     // RecruiterRepo recruiterRepo;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     JobRepo jobRepo;
 
+    @Autowired
+    JobService jobService;
+
     @GetMapping("/")
-    public String home(Model model){
+    public String home( @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,Model model){
 
-         List<Jobs> job = jobRepo.findAll();
+        //  List<Jobs> job = jobRepo.findAll();
 
-        model.addAttribute("job", job);
+          Page<Jobs> jobPage = jobService.getJobs(page, size);
+
+        model.addAttribute("job", jobPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", jobPage.getTotalPages());
+
+        // model.addAttribute("job", job);
         return "newindexYoutube";
     }
 
-    // @GetMapping("/")
-    // public String home(Model model) {
 
-    //     List<Jobs> job = jobRepo.findAll();
+//     @PostMapping("/verify-otp")
+// public String verifyOtp(@RequestParam String email,
+//                         @RequestParam String otp,
+//                         Model model) {
 
-    //     model.addAttribute("job", job);
-    //     return "index1";
-    // }
+//     boolean isValid = userService.verifyOtp(email, otp);
+
+//     if (isValid) {
+//         return "login";
+//     } else {
+//         model.addAttribute("error", "Invalid OTP");
+//         return "otp-page";
+//     }
+// }
+
 
     @GetMapping("/login")
     public String login() {
@@ -79,76 +95,46 @@ public class AuthController {
         return "register";
     }
 
-    // @PostMapping("/RegisterData")
-    // public String saveUser(@ModelAttribute("userdata") User user) {
+        // ✅ Register
+    @PostMapping("/RegisterData12")
+    public String register(@ModelAttribute User12 user, Model model) {
 
-    // user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-    // userRepo.save(user);
-
-    // return "redirect:/login?registerSuccess=true";
-    // }
-
-    // @PostMapping("/RegisterData")
-    // public ResponseEntity<String> registerUser(@RequestBody User user) {
-    // if (userRepo.existsByEmail(user.getEmail())) {
-    // return ResponseEntity.badRequest().body("Email is already registered");
-    // }
-
-    // userRepo.save(user);
-    // return ResponseEntity.ok("Registration successful");
-    // }
-    @PostMapping("/RegisterData")
-    public String registerUser(@ModelAttribute("userdata") User12 user, Model model) {
-
-        // Check if email already exists
         if (userRepo12.existsByEmail(user.getEmail())) {
             model.addAttribute("errorMessage", "This email is already registered!");
-            return "register"; // return to the form page with error
+            model.addAttribute("userdata", user);
+            return "register";
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // Save the new user
-        user = userRepo12.save(user);
+        userService.registerUser(user);
+        model.addAttribute("email", user.getEmail());
 
-        if ("candidate".equalsIgnoreCase(user.getRole())) {
-            // Candidate candidate = new Candidate();
-            // candidate.setCandidateId(user.getUser_id());
-            // candidate.setEmail(user.getEmail());
-            // candidateRepo.save(candidate);
-
-        
-        } else if ("recruiter".equalsIgnoreCase(user.getRole())) {
-            // Recruiter recruiter = new Recruiter();
-            // recruiter.setRecruiterId(user.getUser_id());
-            // recruiter.setEmail(user.getEmail());
-            // recruiterRepo.save(recruiter);
-        }
-
-
-        return "redirect:/login?registerSuccess=true"; // redirect or render success page
+        return "otp-page";
     }
 
-    // @GetMapping("/candidate_home")
-    // public String candidateHome(Model model) {
+        @PostMapping("/verify-otp")
+public String verifyOtp(@RequestParam String email,
+                        @RequestParam String otp,
+                        Model model) {
 
-    //     model.addAttribute("candidateProfile", new Candidate());
+    boolean isValid = userService.verifyOtp(email, otp);
 
-    //     return "candidate_home";
-    // }
+    if (isValid) {
+        return "login";
+    } else {
+        model.addAttribute("error", "Invalid OTP");
+        return "otp-page";
+    }
+}
 
-    // @GetMapping("/recruiter_home")
-    // public String recruiterHome() {
-    //     return "recruiter_home";
-    // }
+    @PostMapping("/resend-otp")
+    public String resendOtp(@RequestParam String email, Model model) {
+        userService.resendOtp(email);
 
-    // @GetMapping("/admin_home")
-    // public String adminHome() {
-    //     return "admin_home";
-    // }
+        model.addAttribute("message", "OTP Sent Again");
+        model.addAttribute("email", email);
+        return "otp-page";
+    }
 
-
-    // @PostMapping("/index1/search")
 
       @GetMapping("/index1/search")
     public String searchJobs(@RequestParam("keyword") String keyword, Model model) {
@@ -166,5 +152,69 @@ public class AuthController {
 
         model.addAttribute("job", job);
         return "newindexYoutube";
+    }
+
+    @PostMapping("/api/auth/send-otp")
+    @ResponseBody
+    public Map<String, Object> sendOtp(@RequestParam String email) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            if (userRepo12.existsByEmail(email)) {
+                response.put("success", false);
+                response.put("message", "Email already registered!");
+            } else {
+                userService.sendOtpForRegistration(email);
+                response.put("success", true);
+                response.put("message", "OTP sent successfully!");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error sending OTP: " + e.getMessage());
+        }
+        return response;
+    }
+
+    @PostMapping("/api/auth/verify-otp-ajax")
+    @ResponseBody
+    public Map<String, Object> verifyOtpAjax(@RequestParam String email, @RequestParam String otp) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            boolean isValid = userService.verifyOtpForRegistration(email, otp);
+            if (isValid) {
+                response.put("success", true);
+                response.put("message", "OTP verified successfully!");
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid or expired OTP!");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error verifying OTP: " + e.getMessage());
+        }
+        return response;
+    }
+
+    @GetMapping("/complete-registration")
+    public String showCompleteRegistration(@RequestParam String email, Model model) {
+        model.addAttribute("email", email);
+        return "complete-registration";
+    }
+
+    @PostMapping("/api/auth/complete-registration")
+    @ResponseBody
+    public Map<String, Object> completeRegistration(@RequestParam String email, 
+                                                   @RequestParam String name, 
+                                                   @RequestParam String password,
+                                                   @RequestParam String role) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            userService.completeRegistration(email, name, password, role);
+            response.put("success", true);
+            response.put("message", "Registration completed successfully! Redirecting to login...");
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error completing registration: " + e.getMessage());
+        }
+        return response;
     }
 }

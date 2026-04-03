@@ -12,8 +12,6 @@ public class RecruiterService {
     @Autowired
     UserRepo12 user12Repo;
 
-    // public User12 getByEmail(String email){
-    //     return user12Repo.findByEmail(email);
-    // }
+    
     
 }

@@ -92,9 +92,10 @@
 
         .radio-option:hover {
             border-color: var(--primary-color);
-            background-color: #f0fdf4; /* Light green tint */
+            background-color: #f0fdf4;
+            /* Light green tint */
         }
-        
+
         .radio-option input[type="radio"] {
             accent-color: var(--primary-color);
             width: 16px;
@@ -164,8 +165,10 @@
                         <a th:href="@{/#footer}">Contact</a>
                     </nav>
                     <div class="auth-buttons">
-                        <a th:href="@{/login}"><button class="commonBtn"><i class="fa-solid fa-user"></i> Login</button></a>
-                        <a th:href="@{/register}"><button class="commonBtn"><i class="fa-solid fa-right-to-bracket"></i> Register</button></a>
+                        <a th:href="@{/login}"><button class="commonBtn"><i class="fa-solid fa-user"></i>
+                                Login</button></a>
+                        <a th:href="@{/register}"><button class="commonBtn"><i class="fa-solid fa-right-to-bracket"></i>
+                                Register</button></a>
                     </div>
                     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
                 </div>
@@ -177,30 +180,24 @@
                     <h2 class="register-title">Create Account</h2>
                     <p class="register-subtitle">Join Recruitify and find your dream career</p>
 
-                    <form th:action="@{/RegisterData}" th:object="${userdata}" method="post">
+                    <form id="registrationForm">
 
-                        <div th:if="${errorMessage}" class="alert-error" th:text="${errorMessage}">
+                        <div id="messageBox"></div>
+
+                        <div id="emailSection">
+                            <label class="form-label">Email Address</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="email" id="emailInput" class="form-input" name="email" required placeholder="Enter your email">
+                                <button type="button" id="sendOtpBtn" class="register-button" style="width: auto; padding: 0 20px; white-space: nowrap; height: 45px;">Send OTP</button>
+                            </div>
                         </div>
 
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" name="email" required>
-
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-input" name="password" required>
-
-                        <label class="form-label">I am a...</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="role" value="Candidate" required checked> Candidate
-                            </label>
-
-                            <label class="radio-option">
-                                <input type="radio" name="role" value="Recruiter" required> Recruiter
-                            </label>
+                        <div id="otpSection" style="display: none; margin-top: 20px;">
+                            <label class="form-label">OTP Code</label>
+                            <input type="text" id="otpInput" class="form-input" name="otp" placeholder="Enter 6-digit OTP" required maxlength="6">
+                            <button type="button" id="verifyOtpBtn" class="register-button">Verify OTP</button>
                         </div>
-
-                        <button type="submit" class="register-button">Create Account</button>
-
+     
                         <p class="login-text">
                             Already have an account?
                             <a th:href="@{/login}" class="login-link">Sign in</a>
@@ -215,6 +212,83 @@
 
     <!-- custom js -->
     <script th:src="@{/js/custom.js}"></script>
+
+    <script>
+        document.getElementById('sendOtpBtn').addEventListener('click', function() {
+            const email = document.getElementById('emailInput').value;
+            if (!email) {
+                alert('Please enter an email address');
+                return;
+            }
+
+            const btn = this;
+            btn.disabled = true;
+            btn.innerText = 'Sending...';
+
+            fetch('/api/auth/send-otp?email=' + encodeURIComponent(email), {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageBox = document.getElementById('messageBox');
+                if (data.success) {
+                    messageBox.innerHTML = `<div class="alert-success" style="color: green; background: #e6fffa; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">${data.message}</div>`;
+                    document.getElementById('otpSection').style.display = 'block';
+                    btn.innerText = 'Resend OTP';
+                    btn.disabled = false;
+                } else {
+                    messageBox.innerHTML = `<div class="alert-error">${data.message}</div>`;
+                    btn.disabled = false;
+                    btn.innerText = 'Send OTP';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                btn.disabled = false;
+                btn.innerText = 'Send OTP';
+            });
+        });
+
+        document.getElementById('verifyOtpBtn').addEventListener('click', function() {
+            const email = document.getElementById('emailInput').value;
+            const otp = document.getElementById('otpInput').value;
+
+            if (!otp) {
+                alert('Please enter the OTP');
+                return;
+            }
+
+            const btn = this;
+            btn.disabled = true;
+            btn.innerText = 'Verifying...';
+
+            fetch(`/api/auth/verify-otp-ajax?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageBox = document.getElementById('messageBox');
+                if (data.success) {
+                    messageBox.innerHTML = `<div class="alert-success" style="color: green; background: #e6fffa; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center;">${data.message}</div>`;
+                    // Redirect to complete registration
+                    setTimeout(() => {
+                        window.location.href = '/complete-registration?email=' + encodeURIComponent(email);
+                    }, 2000);
+                } else {
+                    messageBox.innerHTML = `<div class="alert-error">${data.message}</div>`;
+                    btn.disabled = false;
+                    btn.innerText = 'Verify OTP';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                btn.disabled = false;
+                btn.innerText = 'Verify OTP';
+            });
+        });
+    </script>
 </body>
 
 </html>

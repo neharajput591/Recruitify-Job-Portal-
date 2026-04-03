@@ -1,0 +1,27 @@
+# Registration OTP Flow Implementation Plan
+
+1.  **Frontend: Modify `register.html`**
+    *   [ ] Hide the `Verify` button and `otpfield` initially.
+    *   [ ] Add a `Send OTP` button next to the email field.
+    *   [ ] Use JavaScript (Fetch API) to handle the `Send OTP` click:
+        *   Send request to `/api/auth/send-otp`.
+        *   On success: Show `otpfield` and a `Verify OTP` button, hide `Send OTP` button.
+    *   [ ] Use JavaScript to handle `Verify OTP` click:
+        *   Send request to `/api/auth/verify-otp`.
+        *   On success: Redirect or show next registration steps.
+
+2.  **Backend: Update `User12Service.java`**
+    *   [ ] Ensure `registerUser` (or a new method) saves the user with the OTP so `verifyOtp` can find it.
+    *   [ ] Add a method to handle OTP sending for a given email (checking if already registered).
+
+3.  **Backend: Update `AuthController.java`**
+    *   [ ] Add `@PostMapping("/api/auth/send-otp")` which returns a JSON response.
+    *   [ ] Add `@PostMapping("/api/auth/verify-otp")` which returns a JSON response.
+    *   [ ] (Optional) Handle the completion of registration if needed.
+
+# Task List
+- [ ] Create `task.md` and `implementation_plan.md`
+- [ ] Update `User12Service.java` to support placeholder registration
+- [ ] Update `AuthController.java` with AJAX endpoints
+- [ ] Refactor `register.html` UI and JS
+- [ ] Verify the flow

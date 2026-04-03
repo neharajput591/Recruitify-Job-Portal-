@@ -31,6 +31,8 @@ public class Jobs {
     String qualification;
     Date postedDate = new Date();
 
+    String companyLogo;
+
     // String apply = "Apply Now";
 
     // Acts as a foreign key to User.user_id
@@ -138,6 +140,14 @@ public class Jobs {
 
     public void setRecruiterId(String recruiterId) {
         this.recruiterId = recruiterId;
+    }
+
+    public String getCompanyLogo() {
+        return companyLogo;
+    }
+
+    public void setCompanyLogo(String companyLogo) {
+        this.companyLogo = companyLogo;
     }
 
 }
